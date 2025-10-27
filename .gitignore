@@ -1,0 +1,22 @@
+# --- Reglas Generales de IDEs ---
+.vscode/
+.idea/
+*.iml
+
+# --- Reglas de Angular (dentro de ProyectoFronted) ---
+/ProyectoFronted/node_modules/
+/ProyectoFronted/dist/
+/ProyectoFronted/.angular/cache/
+/ProyectoFronted/npm-debug.log*
+/ProyectoFronted/coverage/
+/ProyectoFronted/.DS_Store
+
+# --- Reglas de Spring Boot (dentro de ProyectoBackend) ---
+/ProyectoBackend/target/
+/ProyectoBackend/build/
+/ProyectoBackend/.gradle/
+/ProyectoBackend/out/
+/ProyectoBackend/*.log
+/ProyectoBackend/.settings/
+/ProyectoBackend/.classpath
+/ProyectoBackend/.project
