@@ -1,0 +1,408 @@
+<app-navbar></app-navbar>
+
+<div class="analytics-page bg-light min-vh-100 py-5">
+  <div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="mb-4">
+      <h1 class="h2 fw-bold mb-2">
+        <i class="bi bi-bar-chart-line me-2" aria-hidden="true"></i>
+        Analytics y Reportes
+      </h1>
+      <p class="text-muted">Estadísticas detalladas de tus cursos y rendimiento</p>
+    </div>
+
+    @if (isLoading()) {
+      <div class="text-center py-5">
+        <app-loading-spinner [size]="60" message="Cargando estadísticas..."></app-loading-spinner>
+      </div>
+    } @else {
+      <!-- Period Selector -->
+      <div class="mb-4">
+        <div class="btn-group" role="group" aria-label="Selector de periodo de tiempo">
+          @for (period of periods; track period.value) {
+            <button 
+              type="button"
+              class="btn"
+              [class.btn-gradient]="selectedPeriod() === period.value"
+              [class.btn-outline-primary]="selectedPeriod() !== period.value"
+              (click)="changePeriod(period.value)">
+              {{ period.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Revenue Overview -->
+      @if (revenue()) {
+        <div class="row g-4 mb-4">
+          <div class="col-md-3">
+            <div class="stat-card card-modern p-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <p class="text-muted small mb-1">Ingresos Totales</p>
+                  <h3 class="fw-bold mb-0">{{ '$' + revenue()!.totalRevenue }}</h3>
+                  <small class="text-success">
+                    <i class="bi bi-arrow-up" aria-hidden="true"></i>
+                    {{ revenue()!.percentageChange.toFixed(1) }}%
+                  </small>
+                </div>
+                <div class="stat-icon bg-gradient rounded-circle">
+                  <i class="bi bi-currency-dollar text-white" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="stat-card card-modern p-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <p class="text-muted small mb-1">Promedio por Curso</p>
+                  <h3 class="fw-bold mb-0">{{ '$' + revenue()!.averageRevenuePerCourse.toFixed(2) }}</h3>
+                </div>
+                <div class="stat-icon bg-gradient rounded-circle">
+                  <i class="bi bi-graph-up text-white" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="stat-card card-modern p-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <p class="text-muted small mb-1">Inscripciones</p>
+                  <h3 class="fw-bold mb-0">{{ revenue()!.totalEnrollments }}</h3>
+                </div>
+                <div class="stat-icon bg-gradient rounded-circle">
+                  <i class="bi bi-people text-white" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="stat-card card-modern p-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <p class="text-muted small mb-1">Tasa de Conversión</p>
+                  <h3 class="fw-bold mb-0">{{ revenue()!.conversionRate.toFixed(1) }}%</h3>
+                </div>
+                <div class="stat-icon bg-gradient rounded-circle">
+                  <i class="bi bi-percent text-white" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="row g-4">
+        <!-- Revenue Chart -->
+        <div class="col-lg-8">
+          <div class="card-modern p-4 h-100">
+            <h5 class="fw-bold mb-4">Ingresos por Mes</h5>
+            
+            @if (revenue() && revenue()!.revenueByMonth.length > 0) {
+              <div class="revenue-chart" role="img" aria-label="Gráfico de barras de ingresos mensuales">
+                @for (month of revenue()!.revenueByMonth; track month.month) {
+                  <div class="chart-item">
+                    <div class="chart-bar-wrapper">
+                      <div 
+                        class="chart-bar bg-gradient"
+                        [style.height.%]="getBarHeight(month.revenue)"
+                        [title]="formatMonth(month.month) + ': $' + month.revenue"
+                        role="graphics-symbol"
+                        aria-label="Barra de ingresos">
+                      </div>
+                    </div>
+                    <small class="chart-label" aria-hidden="true">{{ formatMonth(month.month) }}</small>
+                    <div class="chart-value fw-bold" aria-hidden="true">{{ '$' + month.revenue }}</div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-5 text-muted">
+                <i class="bi bi-graph-down display-4" aria-hidden="true"></i>
+                <p class="mt-3">No hay datos de ingresos para este período</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Top Courses -->
+        <div class="col-lg-4">
+          <div class="card-modern p-4 h-100">
+            <h5 class="fw-bold mb-4">Cursos Más Rentables</h5>
+            
+            @if (revenue() && revenue()!.topPerformingCourses.length > 0) {
+              <div class="list-group list-group-flush">
+                @for (course of revenue()!.topPerformingCourses.slice(0, 5); track course.courseId) {
+                  <div class="list-group-item px-0 py-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div class="flex-grow-1 me-3">
+                        <h6 class="fw-semibold mb-1">{{ course.courseTitle }}</h6>
+                        <small class="text-muted">
+                          {{ course.enrollments }} inscripciones
+                        </small>
+                      </div>
+                      <div class="text-end">
+                        <div class="fw-bold text-success">{{ '$' + course.revenue }}</div>
+                      </div>
+                    </div>
+                    
+                    <!-- CORRECCIÓN: Se agrega title para satisfacer al validador y aria-label fijo -->
+                    <div 
+                      class="progress mt-2 progress-xs" 
+                      role="progressbar" 
+                      [title]="'Ingresos: ' + course.courseTitle"
+                      aria-label="Porcentaje de ingresos del curso" 
+                      [attr.aria-valuenow]="getPercentage(course.revenue)" 
+                      aria-valuemin="0" 
+                      aria-valuemax="100">
+                      
+                      <div 
+                        class="progress-bar bg-gradient" 
+                        [style.width.%]="getPercentage(course.revenue)">
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-4 text-muted">
+                <i class="bi bi-inbox display-4" aria-hidden="true"></i>
+                <p class="mt-3 small">No hay datos disponibles</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Performance -->
+      <div class="row g-4 mt-4">
+        <div class="col-12">
+          <div class="card-modern p-4">
+            <h5 class="fw-bold mb-4">Rendimiento por Curso</h5>
+            
+            @if (myCourses().length > 0) {
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th scope="col">Curso</th>
+                      <th scope="col">Estudiantes</th>
+                      <th scope="col">Rating</th>
+                      <th scope="col">Reseñas</th>
+                      <th scope="col">Ingresos</th>
+                      <th scope="col">Estado</th>
+                      <th scope="col">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (course of myCourses(); track course.id) {
+                      <tr>
+                        <td>
+                          <div class="d-flex align-items-center gap-3">
+                            @if (course.thumbnail) {
+                              <img 
+                                [src]="course.thumbnail" 
+                                alt=""
+                                class="rounded img-thumb">
+                            }
+                            <div>
+                              <div class="fw-semibold">{{ course.title }}</div>
+                              <small class="text-muted">{{ getCategoryLabel(course.category) }}</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <strong>{{ course.enrolledStudents }}</strong>
+                        </td>
+                        <td>
+                          <div class="d-flex align-items-center gap-1" [title]="'Calificación: ' + course.rating">
+                            <i class="bi bi-star-fill text-warning" aria-hidden="true"></i>
+                            <strong>{{ course.rating.toFixed(1) }}</strong>
+                          </div>
+                        </td>
+                        <td>{{ course.totalReviews }}</td>
+                        <td>
+                          <strong class="text-success">
+                            {{ '$' + (course.price * course.enrolledStudents) }}
+                          </strong>
+                        </td>
+                        <td>
+                          <span 
+                            class="badge"
+                            [class.bg-success]="course.status === 'PUBLISHED'"
+                            [class.bg-warning]="course.status === 'PENDING'"
+                            [class.bg-secondary]="course.status === 'DRAFT'">
+                            {{ getStatusLabel(course.status) }}
+                          </span>
+                        </td>
+                        <td>
+                          <div class="btn-group btn-group-sm" role="group" aria-label="Acciones de curso">
+                            <a 
+                              [routerLink]="['/courses', course.id]"
+                              class="btn btn-outline-primary"
+                              target="_blank"
+                              aria-label="Ver curso">
+                              <i class="bi bi-eye" aria-hidden="true"></i>
+                            </a>
+                            <a 
+                              [routerLink]="['/teacher/course-form', course.id]"
+                              class="btn btn-outline-secondary"
+                              aria-label="Editar curso">
+                              <i class="bi bi-pencil" aria-hidden="true"></i>
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              <div class="text-center py-5 text-muted">
+                <i class="bi bi-inbox display-3" aria-hidden="true"></i>
+                <p class="mt-3">No tienes cursos creados</p>
+                <a routerLink="/teacher/course-form" class="btn btn-gradient mt-2">
+                  Crear Mi Primer Curso
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Engagement -->
+      <div class="row g-4 mt-4">
+        <div class="col-md-6">
+          <div class="card-modern p-4">
+            <h5 class="fw-bold mb-4">
+              <i class="bi bi-people-fill me-2" aria-hidden="true"></i>
+              Engagement de Estudiantes
+            </h5>
+            
+            <div class="mb-4">
+              <div class="d-flex justify-content-between mb-2" aria-hidden="true">
+                <span>Tasa de Finalización</span>
+                <strong>67%</strong>
+              </div>
+              <div 
+                class="progress progress-md" 
+                role="progressbar" 
+                aria-label="Tasa de finalización" 
+                aria-valuenow="67" 
+                aria-valuemin="0" 
+                aria-valuemax="100">
+                <div class="progress-bar bg-success" [style.width.%]="67"></div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between mb-2" aria-hidden="true">
+                <span>Participación en Clases</span>
+                <strong>82%</strong>
+              </div>
+              <div 
+                class="progress progress-md" 
+                role="progressbar" 
+                aria-label="Participación en clases" 
+                aria-valuenow="82" 
+                aria-valuemin="0" 
+                aria-valuemax="100">
+                <div class="progress-bar bg-gradient" [style.width.%]="82"></div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between mb-2" aria-hidden="true">
+                <span>Entrega de Tareas</span>
+                <strong>74%</strong>
+              </div>
+              <div 
+                class="progress progress-md" 
+                role="progressbar" 
+                aria-label="Entrega de tareas" 
+                aria-valuenow="74" 
+                aria-valuemin="0" 
+                aria-valuemax="100">
+                <div class="progress-bar bg-info" [style.width.%]="74"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="d-flex justify-content-between mb-2" aria-hidden="true">
+                <span>Satisfacción General</span>
+                <strong>4.6/5.0</strong>
+              </div>
+              <div 
+                class="progress progress-md" 
+                role="progressbar" 
+                aria-label="Satisfacción general" 
+                aria-valuenow="92" 
+                aria-valuemin="0" 
+                aria-valuemax="100">
+                <div class="progress-bar bg-warning" [style.width.%]="92"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card-modern p-4">
+            <h5 class="fw-bold mb-4">
+              <i class="bi bi-clock-history me-2" aria-hidden="true"></i>
+              Actividad Reciente
+            </h5>
+            
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-icon bg-success">
+                  <i class="bi bi-person-plus text-white" aria-hidden="true"></i>
+                </div>
+                <div class="timeline-content">
+                  <small class="text-muted">Hace 2 horas</small>
+                  <p class="mb-0"><strong>5 nuevos estudiantes</strong> inscritos</p>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-icon bg-primary">
+                  <i class="bi bi-star-fill text-white" aria-hidden="true"></i>
+                </div>
+                <div class="timeline-content">
+                  <small class="text-muted">Hace 5 horas</small>
+                  <p class="mb-0"><strong>Nueva reseña 5★</strong></p>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-icon bg-warning">
+                  <i class="bi bi-camera-video text-white" aria-hidden="true"></i>
+                </div>
+                <div class="timeline-content">
+                  <small class="text-muted">Ayer</small>
+                  <p class="mb-0"><strong>Clase en vivo</strong> - 45 asistentes</p>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-icon bg-info">
+                  <i class="bi bi-chat-dots text-white" aria-hidden="true"></i>
+                </div>
+                <div class="timeline-content">
+                  <small class="text-muted">Hace 2 días</small>
+                  <p class="mb-0"><strong>12 nuevas preguntas</strong> en el foro</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<app-footer></app-footer>

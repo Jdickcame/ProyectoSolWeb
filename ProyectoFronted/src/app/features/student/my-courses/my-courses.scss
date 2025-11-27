@@ -1,0 +1,47 @@
+.course-thumbnail {
+  height: 200px;
+  overflow: hidden;
+  
+  img {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.placeholder-thumbnail {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 0.5rem;
+}
+
+.course-card {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+/* --- Clases de utilidad para reemplazar estilos en línea --- */
+
+.progress-xs {
+  height: 6px;
+}
+
+.empty-state-icon {
+  font-size: 3rem; /* Reemplaza al style="font-size: 3rem" */
+}
+
+.min-vh-100 {
+  min-height: 100vh;
+}

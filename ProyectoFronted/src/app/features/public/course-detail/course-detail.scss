@@ -1,0 +1,35 @@
+.course-hero {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+}
+
+.breadcrumb {
+  background: transparent;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.course-preview {
+  max-height: 400px;
+  
+  img {
+    object-fit: cover;
+    height: 400px;
+  }
+}
+
+.accordion-button {
+  background-color: #f8f9fa;
+  
+  &:not(.collapsed) {
+    background-color: #e9ecef;
+  }
+}
+
+.top-spacing {
+    top: 100px;
+    z-index: 10; /* Opcional: Para asegurar que quede encima de otras cosas */
+    }

@@ -1,0 +1,16 @@
+    .catalog-header {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+    }
+
+    .sticky-top {
+      position: sticky;
+    }
+
+    .page-link {
+      cursor: pointer;
+    }
+
+    .top-spacing {
+    top: 100px;
+    z-index: 10; /* Opcional: Para asegurar que quede encima de otras cosas */
+    }

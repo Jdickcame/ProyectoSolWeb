@@ -14,7 +14,19 @@
   justify-content: center;
 }
 
-/* Opcional: Si necesitas asegurarte que el fondo gris cubra toda la pantalla */
+.revenue-bar {
+  height: 150px;
+  display: flex;
+  align-items: flex-end;
+  
+  .bar {
+    width: 100%;
+    min-height: 20px;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease;
+  }
+}
+
 .min-vh-100 {
   min-height: 100vh;
 }

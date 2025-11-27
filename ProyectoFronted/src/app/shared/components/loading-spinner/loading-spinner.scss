@@ -1,0 +1,58 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  
+  &.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(11, 18, 32, 0.9); // Fondo oscuro semi-transparente
+    z-index: 9999;
+  }
+}
+
+.spinner-wrapper {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.spinner-gradient {
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-left-color: #6366F1; // Color primario (Índigo)
+  border-top-color: #EC4899; // Color secundario (Rosa)
+  animation: spin 1s linear infinite;
+}
+
+.loading-message {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Animaciones */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}

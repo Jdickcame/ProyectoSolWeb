@@ -1,0 +1,33 @@
+.course-thumbnail {
+  height: 200px;
+  overflow: hidden;
+  
+  img {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.placeholder-thumbnail {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.course-card {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+/* Clases de utilidad */
+.progress-xs {
+  height: 6px;
+}
+
+.min-vh-100 {
+  min-height: 100vh;
+}

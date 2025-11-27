@@ -1,0 +1,47 @@
+.course-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  border: none;
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.course-thumbnail {
+  height: 200px;
+  overflow: hidden;
+  
+  img {
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+.placeholder-thumbnail {
+  height: 200px;
+}
+
+/* Clase nueva para reemplazar estilo en línea */
+.placeholder-icon {
+  font-size: 3rem;
+}
+
+.course-title {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  
+  a {
+    transition: color 0.2s;
+    
+    &:hover {
+      color: #6366F1 !important;
+    }
+  }
+}

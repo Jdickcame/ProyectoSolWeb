@@ -1,0 +1,19 @@
+.star-icon {
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  
+  &.interactive {
+    cursor: pointer;
+    
+    &:hover, &:focus {
+      transform: scale(1.2);
+      outline: none; /* Quitamos outline por defecto */
+    }
+
+    /* Accesibilidad: Mostrar foco visible para navegación por teclado */
+    &:focus-visible {
+      outline: 2px solid #6366F1;
+      border-radius: 50%;
+    }
+  }
+}

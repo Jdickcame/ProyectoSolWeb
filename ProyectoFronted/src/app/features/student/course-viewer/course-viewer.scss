@@ -1,0 +1,152 @@
+.course-viewer-page {
+  height: calc(100vh - 70px);
+  overflow: hidden;
+}
+
+.viewer-container {
+  display: flex;
+  height: 100%;
+}
+
+.sidebar {
+  width: 350px;
+  background: #1E293B;
+  color: white;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+  
+  &.collapsed {
+    width: 0;
+    overflow: hidden;
+  }
+}
+
+.sidebar-header {
+  padding: 1rem 1.5rem;
+  background: #0F172A;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-content {
+  height: calc(100% - 60px);
+  overflow-y: auto;
+}
+
+.section-header {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.lesson-item {
+  padding: 0.75rem 2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  &.active {
+    background: rgba(99, 102, 241, 0.2);
+    border-left: 3px solid #6366F1;
+  }
+  
+  &.completed {
+    opacity: 0.7;
+  }
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #F8F9FA;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background: #000;
+  
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.placeholder-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lesson-info {
+  background: white;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.lesson-tabs {
+  background: white;
+  
+  .nav-tabs {
+    border-bottom: 1px solid #dee2e6;
+    
+    .nav-link {
+      border: none;
+      color: #6c757d;
+      
+      &.active {
+        color: #6366F1;
+        border-bottom: 2px solid #6366F1;
+      }
+    }
+  }
+}
+
+/* Utilidad para quitar estilos por defecto de los botones */
+.btn-reset {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  width: 100%;
+  text-align: left;
+  
+  /* Accesibilidad: Muestra un borde cuando navegas con teclado */
+  &:focus-visible {
+    outline: 2px solid #6366F1;
+    outline-offset: -2px;
+    z-index: 10;
+  }
+}
+
+/* Reemplazo para style="height: 8px" */
+.progress-sm {
+  height: 8px;
+}
+
+/* Reemplazo para centrar el loading */
+.h-100-minus-nav {
+  height: calc(100vh - 70px);
+}

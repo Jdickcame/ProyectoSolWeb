@@ -1,0 +1,17 @@
+<div class="loading-container" [class.fullscreen]="fullscreen">
+  <div class="spinner-wrapper">
+    <!-- Spinner animado -->
+    <div 
+      class="spinner-gradient" 
+      [style.width.px]="size" 
+      [style.height.px]="size"
+      role="status"
+      aria-label="Cargando">
+    </div>
+    
+    <!-- Mensaje opcional -->
+    @if (message) {
+      <p class="loading-message mt-3 mb-0" role="status">{{ message }}</p>
+    }
+  </div>
+</div>

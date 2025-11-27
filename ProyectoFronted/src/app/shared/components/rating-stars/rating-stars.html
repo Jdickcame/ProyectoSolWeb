@@ -1,0 +1,34 @@
+<div 
+  class="rating-stars d-inline-flex align-items-center gap-1" 
+  [attr.aria-label]="getAriaLabel()"
+  title="estrella"
+  role="img">
+  
+  @for (star of stars; track $index) {
+    <i 
+      class="bi star-icon"
+      [class.bi-star-fill]="star === 'full'"
+      [class.bi-star-half]="star === 'half'"
+      [class.bi-star]="star === 'empty'"
+      [class.interactive]="interactive"
+      [class.text-warning]="star !== 'empty'"
+      [class.text-muted]="star === 'empty'"
+      
+      (click)="onStarClick($index)"
+      (mouseenter)="onStarHover($index)"
+      (mouseleave)="onStarLeave()"
+      (keydown)="onKeyDown($event, $index)"
+      
+      [attr.tabindex]="interactive ? 0 : -1"
+      [attr.role]="interactive ? 'button' : null"
+      [attr.aria-label]="interactive ? ($index + 1) + ' estrellas' : null"
+      [attr.aria-hidden]="!interactive">
+    </i>
+  }
+
+  @if (showValue) {
+    <span class="ms-2 text-muted small" aria-hidden="true">
+      ({{ (rating || 0).toFixed(1) }})
+    </span>
+  }
+</div>

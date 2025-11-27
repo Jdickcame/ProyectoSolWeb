@@ -1,0 +1,20 @@
+.list-group-item {
+  border-left: 4px solid transparent;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-left-color: #6366F1;
+    background-color: rgba(99, 102, 241, 0.05);
+  }
+}
+
+/* Reemplaza style="top: 100px" */
+.sidebar-sticky {
+  position: sticky;
+  top: 100px;
+  z-index: 10;
+}
+
+.min-vh-100 {
+  min-height: 100vh;
+}

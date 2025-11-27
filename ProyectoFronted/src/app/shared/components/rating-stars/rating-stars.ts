@@ -1,45 +1,12 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-rating-stars',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="rating-stars d-inline-flex align-items-center gap-1">
-      @for (star of stars; track $index) {
-        <i 
-          class="bi star-icon"
-          [class.bi-star-fill]="star === 'full'"
-          [class.bi-star-half]="star === 'half'"
-          [class.bi-star]="star === 'empty'"
-          [class.interactive]="interactive"
-          [class.text-warning]="star !== 'empty'"
-          [class.text-muted]="star === 'empty'"
-          (click)="onStarClick($index)"
-          (mouseenter)="onStarHover($index)"
-          (mouseleave)="onStarLeave()">
-        </i>
-      }
-      @if (showValue) {
-        <span class="ms-2 text-muted small">({{ rating.toFixed(1) }})</span>
-      }
-    </div>
-  `,
-  styles: [`
-    .star-icon {
-      font-size: 1rem;
-      transition: all 0.2s ease;
-      
-      &.interactive {
-        cursor: pointer;
-        
-        &:hover {
-          transform: scale(1.2);
-        }
-      }
-    }
-  `]
+  templateUrl: './rating-stars.html',
+  styleUrls: ['./rating-stars.scss']
 })
 export class RatingStars {
   @Input() rating: number = 0;

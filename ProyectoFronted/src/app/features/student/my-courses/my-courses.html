@@ -1,0 +1,90 @@
+<app-navbar></app-navbar>
+
+<div class="my-courses-page bg-light min-vh-100 py-5">
+  <div class="container">
+    <!-- Header -->
+    <div class="mb-5">
+      <h1 class="h2 fw-bold mb-2">Mis Cursos</h1>
+      <p class="text-muted">Continúa tu aprendizaje donde lo dejaste</p>
+    </div>
+
+    @if (isLoading()) {
+      <div class="text-center py-5">
+        <app-loading-spinner [size]="60" message="Cargando cursos..."></app-loading-spinner>
+      </div>
+    } @else if (enrolledCourses().length > 0) {
+      <div class="row g-4">
+        @for (course of enrolledCourses(); track course.id) {
+          <div class="col-lg-4 col-md-6">
+            <div class="course-card card-modern h-100">
+              
+              <!-- Thumbnail -->
+              <div class="course-thumbnail position-relative">
+                @if (course.thumbnail) {
+                  <!-- Alt vacío porque el título está justo abajo (evita redundancia) -->
+                  <img [src]="course.thumbnail" alt="" class="w-100">
+                } @else {
+                  <div class="placeholder-thumbnail bg-gradient">
+                    <i class="bi bi-play-circle text-white fs-1" aria-hidden="true"></i>
+                  </div>
+                }
+                
+                <!-- Progress Bar -->
+                <div class="progress-overlay">
+                  <!-- CORRECCIÓN: Clase .progress-xs y aria-label -->
+                  <div 
+                    class="progress progress-xs mb-1" 
+                    role="progressbar" 
+                    aria-label="Progreso completado"
+                    [attr.aria-valuenow]="getProgress(course.id)" 
+                    aria-valuemin="0" 
+                    aria-valuemax="100">
+                    
+                    <div 
+                      class="progress-bar bg-gradient" 
+                      [style.width.%]="getProgress(course.id)">
+                    </div>
+                  </div>
+                  <small class="text-white">{{ getProgress(course.id) }}% completado</small>
+                </div>
+              </div>
+
+              <!-- Content -->
+              <div class="p-3">
+                <h2 class="h6 fw-bold mb-2">{{ course.title }}</h2>
+                
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <small class="text-muted">{{ course.teacherName }}</small>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between">
+                  <app-rating-stars [rating]="course.rating"></app-rating-stars>
+                  
+                  <a 
+                    [routerLink]="['/student/course-viewer', course.id]" 
+                    class="btn btn-sm btn-gradient">
+                    Continuar
+                    <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="card-modern p-5 text-center">
+        <!-- CORRECCIÓN: Clase .empty-state-icon en lugar de style inline -->
+        <i class="bi bi-inbox text-muted empty-state-icon" aria-hidden="true"></i>
+        <h3 class="h4 mt-4 mb-2">No tienes cursos inscritos</h3>
+        <p class="text-muted mb-4">Explora nuestra biblioteca y comienza a aprender</p>
+        <a routerLink="/courses" class="btn btn-gradient btn-lg">
+          Explorar Cursos
+        </a>
+      </div>
+    }
+  </div>
+</div>
+
+<app-footer></app-footer>

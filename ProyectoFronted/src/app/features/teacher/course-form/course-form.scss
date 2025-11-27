@@ -1,0 +1,20 @@
+.section-card {
+  border-left: 4px solid;
+  border-image: linear-gradient(135deg, #6366F1 0%, #EC4899 100%) 1;
+}
+
+/* Reemplaza style="top: 100px" */
+.sidebar-sticky {
+  position: sticky;
+  top: 100px;
+  z-index: 10;
+}
+
+/* Reemplaza style="max-width: 80px" */
+.input-duration {
+  max-width: 80px;
+}
+
+.min-vh-100 {
+  min-height: 100vh;
+}
