@@ -3,7 +3,7 @@ package com.proyecto.proyectobackend.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.proyecto.proyectobackend.modelo.EstadoCurso;
+import com.proyecto.proyectobackend.model.EstadoCurso;
 
 import lombok.Data;
 
