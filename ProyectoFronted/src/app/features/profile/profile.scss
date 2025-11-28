@@ -1,0 +1,30 @@
+.avatar-placeholder {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Reemplaza estilo en línea de imagen */
+.avatar-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+/* Reemplaza estilo en línea del botón */
+.btn-camera {
+  width: 35px;
+  height: 35px;
+}
+
+.btn.active {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366F1;
+  border-color: #6366F1;
+}
+
+.min-vh-100 {
+  min-height: 100vh;
+}
