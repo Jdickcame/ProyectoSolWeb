@@ -26,7 +26,7 @@ import { environment } from '../../../environments/environment';
 export class TeacherService {
   private http = inject(HttpClient);
   private readonly API_URL = environment.apiUrl;
-
+  
   private myCoursesSignal = signal<Course[]>([]);
   private liveClassesSignal = signal<LiveClass[]>([]);
   private revenueSignal = signal<TeacherRevenue | null>(null);

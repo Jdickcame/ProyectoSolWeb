@@ -131,7 +131,6 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
 
-  // FALLBACK
   {
     path: '**',
     redirectTo: '/home'

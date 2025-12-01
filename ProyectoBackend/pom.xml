@@ -11,7 +11,7 @@
     <groupId>com.proyecto</groupId>
     <artifactId>ProyectoBackend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>ProyectoBackend</name>
     <description>ProyectoBackend</description>
     <url/>

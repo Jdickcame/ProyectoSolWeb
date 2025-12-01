@@ -1,19 +1,14 @@
-// ==========================================================================
-// ENVIRONMENT - DEVELOPMENT
-// Configuración para el entorno de desarrollo
-// ==========================================================================
-
 export const environment = {
-  production: false,
-  environmentName: 'development',
+  production: true,
+  environmentName: 'production',
   
   // API Configuration
-  apiUrl: 'http://localhost:8080/api', // URL del backend Spring Boot
+  apiUrl: '/api', // URL del backend Spring Boot
   apiTimeout: 30000, // 30 segundos
   
   // Authentication
   tokenKey: 'educonect_auth_token',
-  refreshTokenKey: 'educonect_refresh_token',
+  refreshTokenKey: 'educonect_refresh_token', 
   tokenExpirationMinutes: 60, // 1 hora
   
   // Pagination defaults
@@ -32,7 +27,7 @@ export const environment = {
     enableCertificates: true,
     enableCoupons: true,
     enableReviews: true,
-    enablePayments: false, // Desactivado en desarrollo (pago simulado)
+    enablePayments: false, 
   },
   
   // External services
@@ -53,7 +48,7 @@ export const environment = {
   },
   
   // Logging
-  logLevel: 'debug', // 'debug' | 'info' | 'warn' | 'error'
+  logLevel: 'error', // 'debug' | 'info' | 'warn' | 'error'
   enableConsoleLog: true,
 };
 
