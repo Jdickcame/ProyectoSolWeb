@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { Course, CourseCategory, CourseLevel, CourseSortOption } from '../../../core/models';
 import { CourseService } from '../../../core/services/course';
-import { CourseCard } from '../../../shared/components/course-card/course-card';
+import { CourseCard } from '../../../shared/components/course-card/course-card'; 
 import { Footer } from '../../../shared/components/footer/footer';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { Navbar } from '../../../shared/components/navbar/navbar';
@@ -12,19 +11,21 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
 @Component({
   selector: 'app-course-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, Navbar, Footer, CourseCard, LoadingSpinner],
+  imports: [CommonModule, FormsModule, Navbar, Footer, CourseCard, LoadingSpinner],
   templateUrl: './course-catalog.html',
   styleUrls: ['./course-catalog.scss']
 })
 export class CourseCatalog implements OnInit {
   private courseService = inject(CourseService);
 
+  // Signals
   courses = signal<Course[]>([]);
   isLoading = signal<boolean>(false);
   totalCourses = signal<number>(0);
   currentPage = signal<number>(1);
   totalPages = signal<number>(1);
 
+  // Filtros
   searchQuery: string = '';
   selectedCategory: CourseCategory | null = null;
   selectedLevel: CourseLevel | null = null;
@@ -34,6 +35,7 @@ export class CourseCatalog implements OnInit {
 
   private searchTimeout: any;
 
+  // Opciones para Selects
   categories = [
     { value: CourseCategory.PROGRAMMING, label: 'Programación' },
     { value: CourseCategory.DESIGN, label: 'Diseño' },
@@ -79,14 +81,33 @@ export class CourseCatalog implements OnInit {
     };
 
     this.courseService.getCourses(filters).subscribe({
-      next: (response) => {
-        this.courses.set(response.courses);
-        this.totalCourses.set(response.total);
-        this.totalPages.set(response.totalPages);
+      next: (response: any) => {
+        // --- CORRECCIÓN DE COMPATIBILIDAD (Backend Array vs Objeto Paginado) ---
+        let coursesList: Course[] = [];
+        let total = 0;
+        let pages = 1;
+
+        if (Array.isArray(response)) {
+          // Caso: Backend envía lista simple [c1, c2]
+          coursesList = response;
+          total = response.length;
+          pages = 1;
+        } else if (response && response.courses) {
+          // Caso: Backend envía objeto paginado { courses: [...], total: 10 }
+          coursesList = response.courses;
+          total = response.total || coursesList.length;
+          pages = response.totalPages || 1;
+        }
+
+        // Actualizamos las signals
+        this.courses.set(coursesList);
+        this.totalCourses.set(total);
+        this.totalPages.set(pages);
         this.isLoading.set(false);
       },
       error: (error) => {
         console.error('Error loading courses:', error);
+        this.courses.set([]); // Limpiamos la lista para evitar errores en HTML
         this.isLoading.set(false);
       }
     });
@@ -96,7 +117,7 @@ export class CourseCatalog implements OnInit {
     clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => {
       this.currentPage.set(1);
-      this.applyFilters();
+      this.loadCourses(); // Llamamos directamente a loadCourses
     }, 500);
   }
 

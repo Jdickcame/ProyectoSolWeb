@@ -1,12 +1,11 @@
 // ==========================================================================
-// EDUCONECT - ESTILOS GLOBALES
+// ESTILOS GLOBALES
 // ==========================================================================
-
+@use 'assets/styles/variables' as *;
+@use "sass:color";
 // Importar Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-// Importar variables del tema
-@import 'assets/styles/variables';
 
 // ==========================================================================
 // RESET Y BASE STYLES
@@ -37,10 +36,15 @@ body {
 // TIPOGRAFÍA GLOBAL
 // ==========================================================================
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5{
   font-weight: $font-weight-bold;
   line-height: $line-height-tight;
   margin-bottom: $spacing-md;
+  color: $text-primary-light;
+}
+
+h6 {
+  font-size: $font-size-xl;
   color: $text-primary-dark;
 }
 
@@ -72,9 +76,7 @@ h4 {
   font-size: $font-size-2xl;
 }
 
-h5 {
-  font-size: $font-size-xl;
-}
+
 
 h6 {
   font-size: $font-size-lg;
@@ -262,7 +264,7 @@ a {
   border-radius: $radius-full;
   
   &:hover {
-    background: linear-gradient(135deg, lighten($primary-gradient-start, 10%) 0%, lighten($primary-gradient-end, 10%) 100%);
+    background: linear-gradient(135deg, color.adjust($primary-gradient-start, $lightness: 10%) 0%, color.adjust($primary-gradient-end, $lightness: 10%) 100%);
   }
 }
 
@@ -301,3 +303,6 @@ a {
     text-align: center;
   }
 }/* You can add global styles to this file, and also import other style files */
+
+
+

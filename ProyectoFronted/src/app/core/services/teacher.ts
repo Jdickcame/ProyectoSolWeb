@@ -16,6 +16,7 @@ import {
   UpdateLiveClassDto,
   TeacherRevenue,
   RevenuePeriod,
+  User,
 } from '../models';
 import { environment } from '../../../environments/environment';
 
@@ -139,9 +140,8 @@ export class TeacherService {
       );
   }
 
-  getCourseStudents(courseId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.API_URL}/teachers/courses/${courseId}/students`)
-      .pipe(catchError(this.handleError));
+  getCourseStudents(courseId: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.API_URL}/teachers/courses/${courseId}/students`);
   }
 
   getCourseById(courseId: string): Observable<Course> {

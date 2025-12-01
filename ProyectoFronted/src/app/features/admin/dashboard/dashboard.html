@@ -76,7 +76,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <p class="text-muted mb-1">Ingresos Totales</p>
-                <h3 class="fw-bold mb-0">{{ '$' + stats()!.totalRevenue }}</h3>
+                <h3 class="fw-bold mb-1">{{ stats()?.totalRevenue | currency:'PEN':'S/' }}</h3>
               </div>
               <div class="stat-icon bg-gradient rounded-circle">
                 <i class="bi bi-currency-dollar text-white fs-3" aria-hidden="true"></i>

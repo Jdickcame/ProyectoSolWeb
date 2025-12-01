@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Course } from '../../../core/models';
 import { AuthService } from '../../../core/services/auth';
@@ -21,7 +21,7 @@ export class CourseDetail implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private courseService = inject(CourseService);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   private studentService = inject(StudentService);
 
   course = signal<Course | null>(null);
@@ -30,6 +30,19 @@ export class CourseDetail implements OnInit {
   isEnrolling = signal<boolean>(false);
 
   isAuthenticated = this.authService.isAuthenticated;
+
+  // --- NUEVA LÓGICA: Detectar si el usuario puede gestionar este curso ---
+  canManage = computed(() => {
+    const user = this.authService.currentUser();
+    const course = this.course();
+    
+    if (!user || !course) return false;
+
+    // Es Admin O es el Profesor dueño del curso
+    // Nota: Convertimos a string para asegurar comparación correcta
+    return user.role === 'ADMIN' || String(user.id) === String(course.teacherId);
+  });
+  // ---------------------------------------------------------------------
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -87,7 +100,13 @@ export class CourseDetail implements OnInit {
       },
       error: (error) => {
         this.isEnrolling.set(false);
-        alert(error.message || 'Error al inscribirse. Intenta nuevamente.');
+        // Si el error es "Ya estás inscrito", redirigimos amablemente en lugar de alertar error
+        if (error.message && error.message.includes('Ya estás inscrito')) {
+            this.isEnrolled.set(true);
+            this.router.navigate(['/student/my-courses']);
+        } else {
+            alert(error.message || 'Error al inscribirse. Intenta nuevamente.');
+        }
       }
     });
   }

@@ -7,7 +7,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
+import { catchError, tap, map, finalize } from 'rxjs/operators';
 import { computed } from '@angular/core';
 
 import { 
@@ -78,7 +78,10 @@ export class AuthService {
           console.log('✅ Login exitoso:', response.user.email);
         }),
         catchError(this.handleError),
-        tap(() => authActions.setLoading(false))
+        finalize(() => {
+            // ESTO SE EJECUTA SIEMPRE (Éxito o Error)
+            authActions.setLoading(false); // Spinner OFF
+        })
       );
   }
 
@@ -95,7 +98,10 @@ export class AuthService {
           console.log('✅ Registro exitoso:', response.user.email);
         }),
         catchError(this.handleError),
-        tap(() => authActions.setLoading(false))
+        finalize(() => {
+            // ESTO SE EJECUTA SIEMPRE (Éxito o Error)
+            authActions.setLoading(false); // Spinner OFF
+        })
       );
   }
 

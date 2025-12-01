@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { LiveClass } from '../../../core/models';
 import { TeacherService } from '../../../core/services/teacher';
 import { Footer } from '../../../shared/components/footer/footer';
@@ -11,7 +10,7 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
 @Component({
   selector: 'app-live-class-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, Navbar, Footer, LoadingSpinner],
+  imports: [CommonModule, ReactiveFormsModule, Navbar, Footer, LoadingSpinner],
   templateUrl: './live-class-management.html',
   styleUrls: ['./live-class-management.scss']
 })

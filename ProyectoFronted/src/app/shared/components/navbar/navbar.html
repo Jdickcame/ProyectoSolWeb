@@ -5,8 +5,7 @@
       <span class="text-gradient fw-bold fs-4">EduConect</span>
     </a>
 
-    <!-- Toggle button para móvil -->
-    <!-- CORRECCIÓN: Texto oculto para accesibilidad -->
+    <!-- Toggle button -->
     <button 
       class="navbar-toggler" 
       type="button" 
@@ -18,9 +17,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Contenido del navbar -->
     <div class="collapse navbar-collapse" id="navbarContent">
-      <!-- Links de navegación -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link" routerLink="/home" routerLinkActive="active">
@@ -32,7 +29,25 @@
             <i class="bi bi-book me-1" aria-hidden="true"></i>Explorar Cursos
           </a>
         </li>
-        @if (isAuthenticated()) {
+
+        <!-- ENLACE DE MENSAJES (Solo si está logueado) -->
+        @if (isAuthenticated() && !isAdmin()) {
+          <li class="nav-item position-relative">
+            <a class="nav-link" 
+               [routerLink]="isTeacher() ? '/teacher/messages' : '/student/messages'" 
+               routerLinkActive="active">
+              <i class="bi bi-envelope me-1"></i> Mensajes
+              
+              @if (messageService.unreadCount() > 0) {
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                      style="font-size: 0.6rem; margin-top: 8px; margin-left: -5px;">
+                  {{ messageService.unreadCount() > 99 ? '99+' : messageService.unreadCount() }}
+                  <span class="visually-hidden">mensajes no leídos</span>
+                </span>
+              }
+            </a>
+          </li>
+
           @if (isTeacher()) {
             <li class="nav-item">
               <a class="nav-link" routerLink="/teacher/dashboard" routerLinkActive="active">
@@ -43,10 +58,9 @@
         }
       </ul>
 
-      <!-- Acciones del lado derecho -->
+      <!-- Lado Derecho (User Menu) -->
       <div class="d-flex align-items-center gap-3">
         @if (!isAuthenticated()) {
-          <!-- Usuario NO autenticado -->
           <a routerLink="/auth/login" class="btn btn-outline-light btn-sm">
             Iniciar Sesión
           </a>
@@ -54,14 +68,12 @@
             Registrarse
           </a>
         } @else {
-          <!-- Usuario autenticado -->
           <div class="dropdown">
             <button 
               class="btn btn-link text-white text-decoration-none dropdown-toggle d-flex align-items-center gap-2" 
               type="button" 
               data-bs-toggle="dropdown" 
               aria-expanded="false">
-              <!-- CORRECCIÓN: alt vacío para evitar redundancia -->
               <img 
                 [src]="userAvatar()" 
                 alt="" 
@@ -74,43 +86,43 @@
               @if (isStudent()) {
                 <li>
                   <a class="dropdown-item" routerLink="/student/dashboard">
-                    <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>Mi Dashboard
+                    <i class="bi bi-speedometer2 me-2"></i>Mi Dashboard
                   </a>
                 </li>
                 <li>
                   <a class="dropdown-item" routerLink="/student/my-courses">
-                    <i class="bi bi-collection me-2" aria-hidden="true"></i>Mis Cursos
+                    <i class="bi bi-collection me-2"></i>Mis Cursos
                   </a>
                 </li>
               }
               @if (isTeacher()) {
                 <li>
                   <a class="dropdown-item" routerLink="/teacher/dashboard">
-                    <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>Mi Dashboard
+                    <i class="bi bi-speedometer2 me-2"></i>Mi Dashboard
                   </a>
                 </li>
                 <li>
                   <a class="dropdown-item" routerLink="/teacher/my-courses">
-                    <i class="bi bi-collection me-2" aria-hidden="true"></i>Mis Cursos
+                    <i class="bi bi-collection me-2"></i>Mis Cursos
                   </a>
                 </li>
               }
               @if (isAdmin()) {
                 <li>
                   <a class="dropdown-item" routerLink="/admin/dashboard">
-                    <i class="bi bi-shield-check me-2" aria-hidden="true"></i>Panel Admin
+                    <i class="bi bi-shield-check me-2"></i>Panel Admin
                   </a>
                 </li>
               }
               <li><hr class="dropdown-divider"></li>
               <li>
                 <a class="dropdown-item" routerLink="/profile">
-                  <i class="bi bi-person me-2" aria-hidden="true"></i>Mi Perfil
+                  <i class="bi bi-person me-2"></i>Mi Perfil
                 </a>
               </li>
               <li>
                 <button class="dropdown-item" (click)="logout()">
-                  <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Cerrar Sesión
+                  <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
                 </button>
               </li>
             </ul>

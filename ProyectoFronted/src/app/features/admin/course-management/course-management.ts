@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Course } from '../../../core/models';
 import { AdminService } from '../../../core/services/admin';
-import { CourseService } from '../../../core/services/course';
 import { Footer } from '../../../shared/components/footer/footer';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { Navbar } from '../../../shared/components/navbar/navbar';
@@ -18,18 +17,23 @@ import { RatingStars } from '../../../shared/components/rating-stars/rating-star
   styleUrls: ['./course-management.scss']
 })
 export class CourseManagement implements OnInit {
-  private adminService = inject(AdminService);
-  private courseService = inject(CourseService);
-
-  pendingCourses = this.adminService.pendingCourses;
+  public adminService = inject(AdminService);
+  
+  // Signals principales
   allCourses = signal<Course[]>([]);
   filteredCourses = signal<Course[]>([]);
   isLoading = signal<boolean>(false);
 
+  // --- CORRECCIÓN 1: Restauramos pendingCourses usando un computed signal ---
+  // Esto filtra automáticamente la lista principal cuando cambia
+  pendingCourses = computed(() => this.allCourses().filter(c => c.status === 'PENDING'));
+
+  // Filtros
   searchQuery: string = '';
   filterStatus: string = '';
   filterCategory: string = '';
 
+  // Contadores (Signals)
   publishedCount = signal<number>(0);
   rejectedCount = signal<number>(0);
 
@@ -40,10 +44,11 @@ export class CourseManagement implements OnInit {
   loadCourses(): void {
     this.isLoading.set(true);
 
-    this.courseService.getCourses({}).subscribe({
-      next: (response) => {
-        this.allCourses.set(response.courses);
-        this.filteredCourses.set(response.courses);
+    this.adminService.getAllCourses().subscribe({
+      next: (courses) => {
+        const safeCourses = courses || [];
+        this.allCourses.set(safeCourses);
+        this.filteredCourses.set(safeCourses);
         this.updateCounts();
         this.isLoading.set(false);
       },
@@ -52,16 +57,15 @@ export class CourseManagement implements OnInit {
         this.isLoading.set(false);
       }
     });
-
-    this.adminService.getPendingCourses().subscribe({
-      error: (error) => console.error('Error loading pending courses:', error)
-    });
   }
 
   updateCounts(): void {
     const courses = this.allCourses();
+    if (!courses) return;
+
     this.publishedCount.set(courses.filter(c => c.status === 'PUBLISHED').length);
     this.rejectedCount.set(courses.filter(c => c.status === 'REJECTED').length);
+    // Nota: pendingCourses se actualiza solo gracias a 'computed'
   }
 
   filterCourses(): void {
@@ -70,8 +74,8 @@ export class CourseManagement implements OnInit {
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter(c => 
-        c.title.toLowerCase().includes(query) ||
-        c.shortDescription?.toLowerCase().includes(query)
+        (c.title?.toLowerCase().includes(query)) || 
+        (c.shortDescription?.toLowerCase().includes(query))
       );
     }
 
@@ -95,12 +99,16 @@ export class CourseManagement implements OnInit {
 
   approveCourse(courseId: string, title: string): void {
     if (confirm(`¿Aprobar el curso "${title}"?`)) {
+      this.isLoading.set(true);
       this.adminService.approveCourse(courseId).subscribe({
         next: () => {
-          alert('Curso aprobado');
           this.loadCourses();
         },
-        error: (error) => alert('Error: ' + error.message)
+        error: (error) => {
+          console.error(error);
+          this.isLoading.set(false);
+          alert('Error al aprobar');
+        }
       });
     }
   }
@@ -108,28 +116,36 @@ export class CourseManagement implements OnInit {
   rejectCourse(courseId: string, title: string): void {
     const reason = prompt(`¿Por qué rechazas "${title}"?`);
     if (reason) {
+      this.isLoading.set(true);
       this.adminService.rejectCourse(courseId, reason).subscribe({
         next: () => {
-          alert('Curso rechazado');
           this.loadCourses();
         },
-        error: (error) => alert('Error: ' + error.message)
+        error: (error) => {
+          console.error(error);
+          this.isLoading.set(false);
+          alert('Error al rechazar');
+        }
       });
     }
   }
 
+  // --- CORRECCIÓN 2: Restauramos los métodos que faltaban ---
+  
   unpublishCourse(courseId: string, title: string): void {
     if (confirm(`¿Despublicar el curso "${title}"?`)) {
-      alert('Funcionalidad pendiente de implementación');
+      alert('Funcionalidad pendiente de implementación en el backend');
     }
   }
 
   deleteCourse(courseId: string, title: string): void {
     if (confirm(`¿ELIMINAR permanentemente "${title}"?`)) {
-      alert('Funcionalidad pendiente de implementación');
+      alert('Funcionalidad pendiente de implementación en el backend');
     }
   }
+  // ----------------------------------------------------------
 
+  // Helpers visuales
   getCategoryLabel(category: string): string {
     const categories: { [key: string]: string } = {
       'PROGRAMMING': 'Programación',
@@ -148,5 +164,15 @@ export class CourseManagement implements OnInit {
       'REJECTED': 'Rechazado'
     };
     return labels[status] || status;
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'PUBLISHED': return 'badge bg-success';
+      case 'PENDING': return 'badge bg-warning text-dark';
+      case 'REJECTED': return 'badge bg-danger';
+      case 'DRAFT': return 'badge bg-secondary';
+      default: return 'badge bg-light text-dark';
+    }
   }
 }

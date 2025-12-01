@@ -226,8 +226,7 @@
                 <button 
                   type="submit" 
                   class="btn btn-gradient w-100 btn-lg mb-3"
-                  [disabled]="isLoading()">
-                  @if (isLoading()) {
+                  [disabled]="authService.isLoading()"> @if (authService.isLoading()) {
                     <span class="spinner-border spinner-border-sm me-2"></span>
                     Creando cuenta...
                   } @else {

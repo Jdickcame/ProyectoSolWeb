@@ -7,6 +7,7 @@ import { TeacherService } from '../../../core/services/teacher';
 import { Footer } from '../../../shared/components/footer/footer';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { Navbar } from '../../../shared/components/navbar/navbar';
+import { MediaService } from '../../../core/services/media';
 
 @Component({
   selector: 'app-course-form',
@@ -17,14 +18,16 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
 })
 export class CourseForm implements OnInit {
   private fb = inject(FormBuilder);
-  private teacherService = inject(TeacherService);
+  public teacherService = inject(TeacherService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private mediaService = inject(MediaService);
 
   courseForm: FormGroup;
   isEditMode = signal<boolean>(false);
   isLoading = signal<boolean>(false);
   isSaving = signal<boolean>(false);
+  isUploading = signal<boolean>(false);
   courseId: string | null = null;
 
   categories = [
@@ -70,7 +73,7 @@ export class CourseForm implements OnInit {
         this.isEditMode.set(true);
         this.loadCourse(this.courseId);
       } else {
-        // Initialize with default sections for new course
+        // Inicializar con una sección vacía para cursos nuevos
         this.addObjective();
         this.addRequirement();
         this.addSection();
@@ -80,8 +83,16 @@ export class CourseForm implements OnInit {
 
   loadCourse(courseId: string): void {
     this.isLoading.set(true);
+    
+    // 1. IMPORTANTE: Limpiar los arrays antes de llenarlos
+    this.learningObjectives.clear();
+    this.requirements.clear();
+    this.sections.clear();
+
     this.teacherService.getCourseById(courseId).subscribe({
-      next: (course: Course) => {
+      next: (course: any) => { 
+        console.log('📦 DATOS RECIBIDOS:', course); // Debug
+
         this.courseForm.patchValue({
           title: course.title,
           shortDescription: course.shortDescription,
@@ -94,43 +105,60 @@ export class CourseForm implements OnInit {
           hasLiveClasses: course.hasLiveClasses
         });
 
-        // Load objectives
-        if (course.learningObjectives) {
-          course.learningObjectives.forEach((obj: string) => {
-            this.learningObjectives.push(this.fb.control(obj));
-          });
-        }
+        // Cargar objetivos
+        course.learningObjectives?.forEach((obj: string) => {
+          this.learningObjectives.push(this.fb.control(obj));
+        });
 
-        // Load requirements
-        if (course.requirements) {
-          course.requirements.forEach((req: string) => {
-            this.requirements.push(this.fb.control(req));
-          });
-        }
+        // Cargar requisitos
+        course.requirements?.forEach((req: string) => {
+          this.requirements.push(this.fb.control(req));
+        });
 
-        // Load syllabus
-        if (course.syllabus?.sections) {
-          course.syllabus.sections.forEach((section: any) => {
+        // --- CORRECCIÓN DE CARGA DE SECCIONES ---
+        // Buscamos en 'sections' (nuevo backend) o 'syllabus.sections' (viejo)
+        const sectionsData = course.sections || course.syllabus?.sections || [];
+
+        if (sectionsData.length > 0) {
+          sectionsData.forEach((section: any) => {
             const sectionGroup = this.fb.group({
-              title: [section.title],
+              title: [section.title, Validators.required],
               description: [section.description || ''],
               lessons: this.fb.array([])
             });
 
             if (section.lessons) {
               section.lessons.forEach((lesson: any) => {
-                (sectionGroup.get('lessons') as FormArray).push(
-                  this.fb.group({
-                    title: [lesson.title],
-                    duration: [lesson.duration]
-                  })
-                );
+                const lessonGroup = this.fb.group({
+                  title: [lesson.title, Validators.required],
+                  duration: [lesson.duration || 0, Validators.required],
+                  type: [lesson.type || 'VIDEO'],
+                  videoUrl: [lesson.videoUrl || ''], // <--- Cargamos la URL del video
+                  resources: this.fb.array([])
+                });
+
+                // Cargar recursos de la lección si existen
+                if (lesson.resources) {
+                  lesson.resources.forEach((res: any) => {
+                    (lessonGroup.get('resources') as FormArray).push(
+                      this.fb.group({
+                        title: [res.title, Validators.required],
+                        url: [res.url, Validators.required]
+                      })
+                    );
+                  });
+                }
+
+                (sectionGroup.get('lessons') as FormArray).push(lessonGroup);
               });
             }
-
             this.sections.push(sectionGroup);
           });
+        } else {
+          // Si está vacío, agregamos una sección por defecto
+          this.addSection();
         }
+        // ------------------------------------------
 
         this.isLoading.set(false);
       },
@@ -143,6 +171,53 @@ export class CourseForm implements OnInit {
     });
   }
 
+  // Subir imagen de portada del curso
+  onThumbnailSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.uploadAndSetValue(file, this.courseForm.get('thumbnail'));
+    }
+  }
+
+  // Subir video de una lección específica
+  onLessonVideoSelected(event: any, sectionIndex: number, lessonIndex: number): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Buscamos el control 'videoUrl' dentro de la lección específica
+      const control = this.getLessons(sectionIndex).at(lessonIndex).get('videoUrl');
+      this.uploadAndSetValue(file, control);
+    }
+  }
+
+  // Subir archivo de recurso (PDF, Doc, etc)
+  onResourceFileSelected(event: any, sectionIndex: number, lessonIndex: number, resourceIndex: number): void {
+    const file = event.target.files[0];
+    if (file) {
+      const control = this.getResources(sectionIndex, lessonIndex).at(resourceIndex).get('url');
+      this.uploadAndSetValue(file, control);
+    }
+  }
+
+  // Lógica reutilizable de subida
+  private uploadAndSetValue(file: File, control: any): void {
+    this.isUploading.set(true); // Activar spinner de carga
+    
+    this.mediaService.uploadFile(file).subscribe({
+      next: (response) => {
+        // El backend devuelve { url: "..." }
+        control?.setValue(response.url);
+        control?.markAsDirty();
+        this.isUploading.set(false);
+      },
+      error: (error) => {
+        console.error('Error subiendo archivo:', error);
+        alert('Error al subir el archivo. Revisa que no pese más de 10MB.');
+        this.isUploading.set(false);
+      }
+    });
+  }
+  
+  // Getters para el HTML
   get learningObjectives(): FormArray {
     return this.courseForm.get('learningObjectives') as FormArray;
   }
@@ -158,7 +233,13 @@ export class CourseForm implements OnInit {
   getLessons(sectionIndex: number): FormArray {
     return this.sections.at(sectionIndex).get('lessons') as FormArray;
   }
+  
+  // Métodos de Recursos (Nuevos)
+  getResources(sectionIndex: number, lessonIndex: number): FormArray {
+    return this.getLessons(sectionIndex).at(lessonIndex).get('resources') as FormArray;
+  }
 
+  // Métodos de Agregar/Eliminar
   addObjective(): void {
     this.learningObjectives.push(this.fb.control(''));
   }
@@ -177,7 +258,7 @@ export class CourseForm implements OnInit {
 
   addSection(): void {
     const section = this.fb.group({
-      title: [''],
+      title: ['', Validators.required],
       description: [''],
       lessons: this.fb.array([])
     });
@@ -191,8 +272,11 @@ export class CourseForm implements OnInit {
   addLesson(sectionIndex: number): void {
     const lessons = this.getLessons(sectionIndex);
     lessons.push(this.fb.group({
-      title: [''],
-      duration: [0]
+      title: ['', Validators.required],
+      duration: [0, Validators.required], // Default 0
+      type: ['VIDEO'],
+      videoUrl: [''],
+      resources: this.fb.array([])
     }));
   }
 
@@ -201,6 +285,19 @@ export class CourseForm implements OnInit {
     lessons.removeAt(lessonIndex);
   }
 
+  addResource(sectionIndex: number, lessonIndex: number): void {
+    const resources = this.getResources(sectionIndex, lessonIndex);
+    resources.push(this.fb.group({
+      title: ['', Validators.required],
+      url: ['', Validators.required]
+    }));
+  }
+
+  removeResource(sectionIndex: number, lessonIndex: number, resourceIndex: number): void {
+    this.getResources(sectionIndex, lessonIndex).removeAt(resourceIndex);
+  }
+
+  // Guardado
   onSubmit(): void {
     if (this.courseForm.invalid) {
       this.courseForm.markAllAsTouched();
@@ -209,7 +306,6 @@ export class CourseForm implements OnInit {
     }
 
     this.isSaving.set(true);
-
     const courseData = this.prepareCourseData(CourseStatus.PENDING);
 
     if (this.isEditMode()) {
@@ -228,7 +324,7 @@ export class CourseForm implements OnInit {
       this.teacherService.createCourse(courseData).subscribe({
         next: () => {
           this.isSaving.set(false);
-          alert('Curso creado exitosamente. Está pendiente de aprobación.');
+          alert('Curso creado exitosamente.');
           this.router.navigate(['/teacher/my-courses']);
         },
         error: (error) => {
@@ -241,7 +337,6 @@ export class CourseForm implements OnInit {
 
   saveDraft(): void {
     this.isSaving.set(true);
-
     const courseData = this.prepareCourseData(CourseStatus.DRAFT);
 
     this.teacherService.createCourse(courseData).subscribe({
@@ -257,30 +352,33 @@ export class CourseForm implements OnInit {
     });
   }
 
+  // Preparar datos para el backend
   private prepareCourseData(status: CourseStatus): any {
     const formValue = this.courseForm.value;
 
-    // Build syllabus
-    const syllabus = {
-      sections: formValue.sections.map((section: any, index: number) => ({
-        id: `section-${index + 1}`,
-        title: section.title,
-        description: section.description,
-        order: index + 1,
-        lessons: section.lessons.map((lesson: any, lessonIndex: number) => ({
-          id: `lesson-${index + 1}-${lessonIndex + 1}`,
-          title: lesson.title,
-          duration: lesson.duration,
-          order: lessonIndex + 1,
-          type: 'VIDEO' as any
-        }))
+    // Transformar la estructura del formulario al formato del DTO
+    const sections = formValue.sections.map((section: any, index: number) => ({
+      title: section.title,
+      description: section.description,
+      order: index + 1,
+      lessons: section.lessons.map((lesson: any, lessonIndex: number) => ({
+        title: lesson.title,
+        duration: lesson.duration,
+        order: lessonIndex + 1,
+        type: 'VIDEO',
+        videoUrl: lesson.videoUrl,
+        // Mapear recursos si los hay
+        resources: lesson.resources?.map((res: any) => ({
+            title: res.title,
+            url: res.url
+        })) || []
       }))
-    };
+    }));
 
     return {
       ...formValue,
       status,
-      syllabus,
+      sections, // Enviamos 'sections' directamente
       currency: 'USD'
     };
   }

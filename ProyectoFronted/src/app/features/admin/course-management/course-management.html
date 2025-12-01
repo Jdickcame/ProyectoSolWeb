@@ -7,14 +7,13 @@
       <p class="text-muted mb-0">Administra y aprueba cursos de la plataforma</p>
     </div>
 
-    <!-- Stats Cards -->
     <div class="row g-4 mb-4">
       <div class="col-md-3">
         <div class="stat-card card-modern p-4">
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <p class="text-muted small mb-1">Total Cursos</p>
-              <h3 class="fw-bold mb-0">{{ allCourses().length }}</h3>
+              <h3 class="fw-bold mb-0">{{ (allCourses() || []).length }}</h3>
             </div>
             <div class="stat-icon bg-gradient rounded-circle">
               <i class="bi bi-collection text-white" aria-hidden="true"></i>
@@ -28,7 +27,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <p class="text-muted small mb-1">Pendientes</p>
-              <h3 class="fw-bold mb-0">{{ pendingCourses().length }}</h3>
+              <h3 class="fw-bold mb-0">{{ (pendingCourses() || []).length }}</h3>
             </div>
             <div class="stat-icon bg-warning rounded-circle">
               <i class="bi bi-clock-history text-white" aria-hidden="true"></i>
@@ -66,7 +65,6 @@
       </div>
     </div>
 
-    <!-- Filters -->
     <div class="card-modern p-4 mb-4">
       <div class="row g-3">
         <div class="col-md-4">
@@ -116,13 +114,12 @@
       </div>
     </div>
 
-    <!-- Courses Table -->
     <div class="card-modern p-4">
       @if (isLoading()) {
         <div class="text-center py-5">
           <app-loading-spinner [size]="50"></app-loading-spinner>
         </div>
-      } @else if (filteredCourses().length > 0) {
+      } @else if ((filteredCourses() || []).length > 0) {
         <div class="table-responsive">
           <table class="table table-hover align-middle">
             <thead>
@@ -143,15 +140,14 @@
                   <td>
                     <div class="d-flex align-items-center gap-3">
                       @if (course.thumbnail) {
-                        <!-- CORRECCIÓN: Clase .course-thumb en lugar de style inline y alt vacío -->
                         <img 
                           [src]="course.thumbnail" 
                           alt=""
-                          class="rounded course-thumb">
+                          class="rounded"
+                          style="width: 60px; height: 40px; object-fit: cover;">
                       }
                       <div>
-                        <div class="fw-semibold">{{ course.title }}</div>
-                        <small class="text-muted">{{ course.shortDescription }}</small>
+                        <div class="fw-semibold text-truncate" style="max-width: 200px;" [title]="course.title">{{ course.title }}</div>
                       </div>
                     </div>
                   </td>
@@ -187,7 +183,6 @@
                   </td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <!-- CORRECCIÓN: rel="noopener noreferrer" y texto oculto -->
                       <a 
                         [routerLink]="['/courses', course.id]"
                         class="btn btn-outline-primary"

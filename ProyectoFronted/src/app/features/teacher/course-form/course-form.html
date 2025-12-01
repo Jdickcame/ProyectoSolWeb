@@ -2,10 +2,8 @@
 
 <div class="course-form-page bg-light min-vh-100 py-5">
   <div class="container">
-    <!-- Header -->
     <div class="mb-4">
       <div class="d-flex align-items-center gap-3 mb-3">
-        <!-- CORRECCIÓN: Texto oculto para el botón Atrás -->
         <a routerLink="/teacher/my-courses" class="btn btn-outline-secondary">
           <i class="bi bi-arrow-left" aria-hidden="true"></i>
           <span class="visually-hidden">Volver a mis cursos</span>
@@ -24,185 +22,42 @@
     } @else {
       <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
         <div class="row">
-          <!-- Main Content -->
+          
           <div class="col-lg-8">
             
-            <!-- Step 1: Basic Information -->
             <div class="card-modern p-4 mb-4">
               <h5 class="fw-bold mb-4">
                 <span class="badge bg-gradient me-2">1</span>
                 Información Básica
               </h5>
-
-              <!-- Title -->
               <div class="mb-3">
-                <label for="title" class="form-label fw-semibold">Título del Curso *</label>
-                <input 
-                  type="text"
-                  id="title"
-                  class="form-control"
-                  formControlName="title"
-                  placeholder="Ej: Curso Completo de Angular"
-                  [class.is-invalid]="isFieldInvalid('title')">
-                @if (isFieldInvalid('title')) {
-                  <div class="invalid-feedback">El título es obligatorio</div>
-                }
+                <label class="form-label fw-semibold">Título del Curso *</label>
+                <input type="text" class="form-control" formControlName="title" [class.is-invalid]="isFieldInvalid('title')">
               </div>
-
-              <!-- Short Description -->
               <div class="mb-3">
-                <label for="shortDescription" class="form-label fw-semibold">Descripción Corta *</label>
-                <input 
-                  type="text"
-                  id="shortDescription"
-                  class="form-control"
-                  formControlName="shortDescription"
-                  placeholder="Descripción breve que aparecerá en las tarjetas"
-                  maxlength="150"
-                  [class.is-invalid]="isFieldInvalid('shortDescription')">
-                <small class="text-muted">{{ courseForm.get('shortDescription')?.value?.length || 0 }}/150 caracteres</small>
-                @if (isFieldInvalid('shortDescription')) {
-                  <div class="invalid-feedback">La descripción corta es obligatoria</div>
-                }
+                <label class="form-label fw-semibold">Descripción Corta *</label>
+                <input type="text" class="form-control" formControlName="shortDescription">
               </div>
-
-              <!-- Description -->
               <div class="mb-3">
-                <label for="description" class="form-label fw-semibold">Descripción Completa *</label>
-                <textarea 
-                  id="description"
-                  class="form-control"
-                  formControlName="description"
-                  rows="6"
-                  placeholder="Describe detalladamente de qué trata tu curso..."
-                  [class.is-invalid]="isFieldInvalid('description')">
-                </textarea>
-                @if (isFieldInvalid('description')) {
-                  <div class="invalid-feedback">La descripción es obligatoria</div>
-                }
+                <label class="form-label fw-semibold">Descripción Completa *</label>
+                <textarea class="form-control" formControlName="description" rows="4"></textarea>
               </div>
-
-              <!-- Category & Level -->
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label for="category" class="form-label fw-semibold">Categoría *</label>
-                  <select 
-                    id="category"
-                    class="form-select"
-                    formControlName="category"
-                    [class.is-invalid]="isFieldInvalid('category')">
-                    <option value="">Selecciona una categoría</option>
-                    @for (cat of categories; track cat.value) {
-                      <option [value]="cat.value">{{ cat.label }}</option>
-                    }
-                  </select>
-                  @if (isFieldInvalid('category')) {
-                    <div class="invalid-feedback">La categoría es obligatoria</div>
-                  }
+                    <label class="form-label fw-semibold">Categoría</label>
+                    <select class="form-select" formControlName="category">
+                        @for (cat of categories; track cat.value) { <option [value]="cat.value">{{ cat.label }}</option> }
+                    </select>
                 </div>
-
                 <div class="col-md-6">
-                  <label for="level" class="form-label fw-semibold">Nivel *</label>
-                  <select 
-                    id="level"
-                    class="form-select"
-                    formControlName="level"
-                    [class.is-invalid]="isFieldInvalid('level')">
-                    <option value="">Selecciona un nivel</option>
-                    @for (level of levels; track level.value) {
-                      <option [value]="level.value">{{ level.label }}</option>
-                    }
-                  </select>
-                  @if (isFieldInvalid('level')) {
-                    <div class="invalid-feedback">El nivel es obligatorio</div>
-                  }
+                    <label class="form-label fw-semibold">Nivel</label>
+                    <select class="form-select" formControlName="level">
+                        @for (lvl of levels; track lvl.value) { <option [value]="lvl.value">{{ lvl.label }}</option> }
+                    </select>
                 </div>
               </div>
             </div>
 
-            <!-- Step 2: Learning Objectives -->
-            <div class="card-modern p-4 mb-4">
-              <h5 class="fw-bold mb-4">
-                <span class="badge bg-gradient me-2">2</span>
-                Objetivos de Aprendizaje
-              </h5>
-
-              <div formArrayName="learningObjectives">
-                @for (objective of learningObjectives.controls; track $index) {
-                  <div class="input-group mb-3">
-                    <span class="input-group-text">
-                      <i class="bi bi-check-circle" aria-hidden="true"></i>
-                    </span>
-                    <input 
-                      type="text"
-                      class="form-control"
-                      [formControlName]="$index"
-                      aria-label="Objetivo de aprendizaje"
-                      placeholder="Ej: Aprenderás a crear aplicaciones web modernas">
-                    
-                    <!-- CORRECCIÓN: Texto oculto para eliminar objetivo -->
-                    <button 
-                      type="button"
-                      class="btn btn-outline-danger"
-                      (click)="removeObjective($index)">
-                      <i class="bi bi-trash" aria-hidden="true"></i>
-                      <span class="visually-hidden">Eliminar objetivo {{ $index + 1 }}</span>
-                    </button>
-                  </div>
-                }
-              </div>
-
-              <button 
-                type="button"
-                class="btn btn-outline-primary btn-sm"
-                (click)="addObjective()">
-                <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>
-                Agregar Objetivo
-              </button>
-            </div>
-
-            <!-- Step 3: Requirements -->
-            <div class="card-modern p-4 mb-4">
-              <h5 class="fw-bold mb-4">
-                <span class="badge bg-gradient me-2">3</span>
-                Requisitos Previos
-              </h5>
-
-              <div formArrayName="requirements">
-                @for (req of requirements.controls; track $index) {
-                  <div class="input-group mb-3">
-                    <span class="input-group-text">
-                      <i class="bi bi-dot" aria-hidden="true"></i>
-                    </span>
-                    <input 
-                      type="text"
-                      class="form-control"
-                      [formControlName]="$index"
-                      aria-label="Requisito previo"
-                      placeholder="Ej: Conocimientos básicos de HTML y CSS">
-                    
-                    <!-- CORRECCIÓN: Texto oculto para eliminar requisito -->
-                    <button 
-                      type="button"
-                      class="btn btn-outline-danger"
-                      (click)="removeRequirement($index)">
-                      <i class="bi bi-trash" aria-hidden="true"></i>
-                      <span class="visually-hidden">Eliminar requisito {{ $index + 1 }}</span>
-                    </button>
-                  </div>
-                }
-              </div>
-
-              <button 
-                type="button"
-                class="btn btn-outline-primary btn-sm"
-                (click)="addRequirement()">
-                <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>
-                Agregar Requisito
-              </button>
-            </div>
-
-            <!-- Step 4: Course Content (Syllabus) -->
             <div class="card-modern p-4 mb-4">
               <h5 class="fw-bold mb-4">
                 <span class="badge bg-gradient me-2">4</span>
@@ -210,225 +65,192 @@
               </h5>
 
               <div formArrayName="sections">
-                @for (section of sections.controls; track $index) {
-                  <div class="section-card card bg-light mb-3" [formGroupName]="$index">
+                @for (section of sections.controls; track $index; let sectionIndex = $index) {
+                  
+                  <div class="section-card card bg-light mb-3" [formGroupName]="sectionIndex">
                     <div class="card-body">
+                      
                       <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0">Sección {{ $index + 1 }}</h6>
-                        
-                        <!-- CORRECCIÓN: Texto oculto para eliminar sección -->
-                        <button 
-                          type="button"
-                          class="btn btn-sm btn-outline-danger"
-                          (click)="removeSection($index)">
-                          <i class="bi bi-trash" aria-hidden="true"></i>
-                          <span class="visually-hidden">Eliminar sección {{ $index + 1 }}</span>
+                        <h6 class="fw-bold mb-0">Sección {{ sectionIndex + 1 }}</h6>
+                        <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeSection(sectionIndex)">
+                          <i class="bi bi-trash"></i>
                         </button>
                       </div>
 
-                      <!-- Section Title -->
                       <div class="mb-3">
-                        <input 
-                          type="text"
-                          class="form-control"
-                          formControlName="title"
-                          aria-label="Título de la sección"
-                          placeholder="Título de la sección">
+                        <input type="text" class="form-control" formControlName="title" placeholder="Título de la sección">
+                      </div>
+                      <div class="mb-3">
+                        <textarea class="form-control" formControlName="description" rows="2" placeholder="Descripción (opcional)"></textarea>
                       </div>
 
-                      <!-- Section Description -->
-                      <div class="mb-3">
-                        <textarea 
-                          class="form-control"
-                          formControlName="description"
-                          rows="2"
-                          aria-label="Descripción de la sección"
-                          placeholder="Descripción de la sección (opcional)">
-                        </textarea>
-                      </div>
-
-                      <!-- Lessons -->
                       <div formArrayName="lessons">
                         <p class="form-label small fw-semibold">Lecciones:</p>
-                        @for (lesson of getLessons($index).controls; track $index; let lessonIndex = $index) {
-                          <div class="input-group input-group-sm mb-2" [formGroupName]="lessonIndex">
-                            <span class="input-group-text">
-                              <i class="bi bi-play-circle" aria-hidden="true"></i>
-                            </span>
-                            <input 
-                              type="text"
-                              class="form-control"
-                              formControlName="title"
-                              placeholder="Título de la lección"
-                              aria-label="Título de la lección">
+                        
+                        @for (lesson of getLessons(sectionIndex).controls; track $index; let lessonIndex = $index) {
+                          <div class="border rounded p-3 mb-3 bg-white shadow-sm" [formGroupName]="lessonIndex">
                             
-                            <!-- CORRECCIÓN: Clase .input-duration reemplaza style inline -->
-                            <input 
-                              type="number"
-                              class="form-control input-duration"
-                              formControlName="duration"
-                              placeholder="Min"
-                              aria-label="Duración en minutos">
-                            
-                            <!-- CORRECCIÓN: Texto oculto para eliminar lección -->
-                            <button 
-                              type="button"
-                              class="btn btn-outline-danger"
-                              (click)="removeLesson($index, lessonIndex)">
-                              <i class="bi bi-x" aria-hidden="true"></i>
-                              <span class="visually-hidden">Eliminar lección</span>
-                            </button>
+                            <div class="input-group input-group-sm mb-2">
+                              <span class="input-group-text"><i class="bi bi-play-circle"></i></span>
+                              <input type="text" class="form-control" formControlName="title" placeholder="Título">
+                              <input type="number" class="form-control" formControlName="duration" placeholder="Min" style="max-width: 80px;">
+                              <button type="button" class="btn btn-outline-danger" (click)="removeLesson(sectionIndex, lessonIndex)">
+                                <i class="bi bi-x"></i>
+                              </button>
+                            </div>
+
+                            <div class="mb-2 p-2 bg-light rounded border">
+                              <div class="input-group input-group-sm mb-1">
+                                <input 
+                                  type="file" 
+                                  class="form-control" 
+                                  accept="video/*"
+                                  (change)="onLessonVideoSelected($event, sectionIndex, lessonIndex)">
+                              </div>
+                              <input type="text" class="form-control form-control-sm border-0 bg-transparent" formControlName="videoUrl" placeholder="URL del video" readonly>
+                            </div>
+
+                            <div class="ps-2 mt-3 border-top pt-2">
+                              <small class="d-block text-muted mb-2 fw-bold">Material Adjunto:</small>
+                              
+                              <div formArrayName="resources">
+                                @for (res of getResources(sectionIndex, lessonIndex).controls; track $index; let resIndex = $index) {
+                                  <div class="input-group input-group-sm mb-2" [formGroupName]="resIndex">
+                                    <input type="text" class="form-control" formControlName="title" placeholder="Nombre">
+                                    
+                                    <input 
+                                      type="file" 
+                                      class="form-control" 
+                                      style="max-width: 40%;"
+                                      (change)="onResourceFileSelected($event, sectionIndex, lessonIndex, resIndex)">
+                                    
+                                    <input type="text" class="form-control d-none" formControlName="url">
+
+                                    <button type="button" class="btn btn-outline-danger" (click)="removeResource(sectionIndex, lessonIndex, resIndex)">
+                                      <i class="bi bi-trash"></i>
+                                    </button>
+                                  </div>
+                                }
+                              </div>
+
+                              <button type="button" class="btn btn-link btn-sm p-0 mt-1" (click)="addResource(sectionIndex, lessonIndex)">
+                                <i class="bi bi-plus-circle me-1"></i> Agregar Recurso
+                              </button>
+                            </div>
+
                           </div>
                         }
                       </div>
 
-                      <button 
-                        type="button"
-                        class="btn btn-outline-secondary btn-sm mt-2"
-                        (click)="addLesson($index)">
-                        <i class="bi bi-plus me-1" aria-hidden="true"></i>
-                        Agregar Lección
+                      <button type="button" class="btn btn-outline-secondary btn-sm mt-2" (click)="addLesson(sectionIndex)">
+                        <i class="bi bi-plus me-1"></i> Agregar Lección
                       </button>
                     </div>
                   </div>
                 }
               </div>
 
-              <button 
-                type="button"
-                class="btn btn-outline-primary"
-                (click)="addSection()">
-                <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>
-                Agregar Sección
+              <button type="button" class="btn btn-outline-primary" (click)="addSection()">
+                <i class="bi bi-plus-circle me-2"></i> Agregar Sección
               </button>
             </div>
           </div>
 
-          <!-- Sidebar -->
           <div class="col-lg-4">
-            <!-- Pricing & Settings -->
-            <!-- CORRECCIÓN: Clase .sidebar-sticky reemplaza style="top: 100px" -->
             <div class="card-modern p-4 mb-4 sidebar-sticky">
               <h5 class="fw-bold mb-4">Configuración</h5>
 
-              <!-- Price -->
               <div class="mb-3">
-                <label for="price" class="form-label fw-semibold">Precio (USD) *</label>
+                <label class="form-label fw-semibold">Precio (USD) *</label>
                 <div class="input-group">
                   <span class="input-group-text">$</span>
-                  <input 
-                    type="number"
-                    id="price"
-                    class="form-control"
-                    formControlName="price"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    [class.is-invalid]="isFieldInvalid('price')">
+                  <input type="number" class="form-control" formControlName="price" min="0" step="0.01">
                 </div>
-                <small class="text-muted">Usa 0 para cursos gratuitos</small>
-                @if (isFieldInvalid('price')) {
-                  <div class="invalid-feedback d-block">El precio es obligatorio</div>
-                }
+                <small class="text-muted">Usa 0 para gratis</small>
               </div>
 
-              <!-- Thumbnail URL -->
               <div class="mb-3">
-                <label for="thumbnail" class="form-label fw-semibold">URL de Imagen</label>
+                <label class="form-label fw-semibold">Imagen del Curso</label>
+                
                 <input 
-                  type="url"
-                  id="thumbnail"
-                  class="form-control"
-                  formControlName="thumbnail"
-                  placeholder="https://ejemplo.com/imagen.jpg">
-                <small class="text-muted">URL de la imagen del curso</small>
-              </div>
+                  type="file" 
+                  class="form-control mb-2" 
+                  accept="image/*"
+                  (change)="onThumbnailSelected($event)"
+                  [disabled]="isUploading()">
 
-              <!-- Preview -->
+                <input type="text" class="form-control form-control-sm text-muted bg-light" formControlName="thumbnail" readonly placeholder="URL de imagen...">
+              </div>
+              
               @if (courseForm.get('thumbnail')?.value) {
                 <div class="mb-3">
-                  <img 
-                    [src]="courseForm.get('thumbnail')?.value" 
-                    class="img-fluid rounded"
-                    alt=""
-                    (error)="onImageError($event)">
+                  <img [src]="courseForm.get('thumbnail')?.value" class="img-fluid rounded shadow-sm" alt="Vista previa" (error)="onImageError($event)">
                 </div>
               }
 
-              <!-- Checkboxes -->
+              <hr>
+
               <div class="mb-3">
-                <div class="form-check">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
-                    id="hasCertificate"
-                    formControlName="hasCertificate">
-                  <label class="form-check-label" for="hasCertificate">
-                    Incluye certificado
-                  </label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="hasCertificate" formControlName="hasCertificate">
+                  <label class="form-check-label" for="hasCertificate">Incluye certificado</label>
                 </div>
               </div>
 
               <div class="mb-4">
-                <div class="form-check">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
-                    id="hasLiveClasses"
-                    formControlName="hasLiveClasses">
-                  <label class="form-check-label" for="hasLiveClasses">
-                    Incluye clases en vivo
-                  </label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="hasLiveClasses" formControlName="hasLiveClasses">
+                  <label class="form-check-label" for="hasLiveClasses">Incluye clases en vivo</label>
                 </div>
               </div>
 
               <hr>
 
-              <!-- Actions -->
               <div class="d-grid gap-2">
                 @if (isEditMode()) {
                   <button 
-                    type="submit"
-                    class="btn btn-gradient"
-                    [disabled]="isSaving() || courseForm.invalid">
+                    type="submit" 
+                    class="btn btn-gradient" 
+                    [disabled]="isSaving() || isUploading() || courseForm.invalid">
                     @if (isSaving()) {
-                      <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                      Guardando...
+                      <span class="spinner-border spinner-border-sm me-2"></span> Guardando...
                     } @else {
-                      <i class="bi bi-check-circle me-2" aria-hidden="true"></i>
-                      Actualizar Curso
+                      <i class="bi bi-check-circle me-2"></i> Actualizar Curso
                     }
                   </button>
                 } @else {
                   <button 
-                    type="submit"
-                    class="btn btn-gradient"
-                    [disabled]="isSaving() || courseForm.invalid">
+                    type="submit" 
+                    class="btn btn-gradient" 
+                    [disabled]="isSaving() || isUploading() || courseForm.invalid">
                     @if (isSaving()) {
-                      <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                      Creando...
+                      <span class="spinner-border spinner-border-sm me-2"></span> Creando...
                     } @else {
-                      <i class="bi bi-send me-2" aria-hidden="true"></i>
-                      Publicar Curso
+                      <i class="bi bi-send me-2"></i> Publicar Curso
                     }
                   </button>
                   
                   <button 
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    (click)="saveDraft()"
-                    [disabled]="isSaving()">
-                    <i class="bi bi-save me-2" aria-hidden="true"></i>
-                    Guardar Borrador
+                    type="button" 
+                    class="btn btn-outline-secondary" 
+                    (click)="saveDraft()" 
+                    [disabled]="isSaving() || isUploading()">
+                    <i class="bi bi-save me-2"></i> Guardar Borrador
                   </button>
                 }
-
-                <a routerLink="/teacher/my-courses" class="btn btn-outline-danger">
-                  Cancelar
-                </a>
+                
+                <a routerLink="/teacher/my-courses" class="btn btn-outline-danger">Cancelar</a>
               </div>
+
+              @if (isUploading()) {
+                <div class="alert alert-info mt-3 small">
+                  <span class="spinner-border spinner-border-sm me-2"></span> Subiendo archivos... espera por favor.
+                </div>
+              }
+
             </div>
           </div>
+
         </div>
       </form>
     }

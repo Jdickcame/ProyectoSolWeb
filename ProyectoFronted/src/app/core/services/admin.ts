@@ -7,7 +7,7 @@ import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http'
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-import { User, Course, CourseStatus } from '../models';
+import { User, Course,} from '../models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -84,6 +84,10 @@ export class AdminService {
     );
   }
 
+  getAllCourses(): Observable<Course[]> {
+    return this.http.get<Course[]>(`${this.API_URL}/admin/courses`);
+  }
+
   getPendingCourses(): Observable<Course[]> {
     return this.http.get<Course[]>(`${this.API_URL}/admin/courses/pending`)
       .pipe(
@@ -116,7 +120,7 @@ export class AdminService {
       );
   }
 
-  getDashboardStats(): Observable<any> {
+  getGlobalStats(): Observable<any> {
     return this.http.get<any>(`${this.API_URL}/admin/stats`)
       .pipe(
         tap(stats => this.statsSignal.set(stats)),

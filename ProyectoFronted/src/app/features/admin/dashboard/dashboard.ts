@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AdminService } from '../../../core/services/admin';
 import { AuthService } from '../../../core/services/auth';
@@ -18,26 +18,54 @@ export class Dashboard implements OnInit {
   private adminService = inject(AdminService);
   private authService = inject(AuthService);
 
-  stats = this.adminService.stats;
-  pendingCourses = this.adminService.pendingCourses;
-  users = this.adminService.users;
-  isLoading = this.adminService.isLoading;
+  // CORRECCIÓN: Definimos explícitamente que puede ser null o cualquier objeto
+  stats = signal<any | null>(null);
+
+  revenue = computed(() => this.stats()?.totalRevenue || 0);
+  
+  // Asegúrate de que estos signals existan en tu AdminService o defínelos aquí si son locales
+  // Si AdminService no tiene 'pendingCourses' como signal pública, defínela aquí:
+  pendingCourses = signal<any[]>([]); 
+  users = signal<any[]>([]);
+  isLoading = signal<boolean>(false);
+
+  // Totales individuales por si acaso
+  totalUsers = signal<number>(0);
+  totalCourses = signal<number>(0);
+  totalEnrollments = signal<number>(0);
 
   ngOnInit(): void {
     this.loadDashboardData();
   }
 
   loadDashboardData(): void {
-    this.adminService.getDashboardStats().subscribe({
-      error: (error) => console.error('Error loading stats:', error)
+    this.isLoading.set(true);
+
+    this.adminService.getGlobalStats().subscribe({
+      next: (data) => {
+        // 2. Solo llenamos stats
+        this.stats.set(data); 
+        this.isLoading.set(false);
+      },
+      error: (err) => console.error(err)
     });
 
+    // 2. Cargar Cursos Pendientes
     this.adminService.getPendingCourses().subscribe({
+      next: (courses) => this.pendingCourses.set(courses),
       error: (error) => console.error('Error loading pending courses:', error)
     });
 
+    // 3. Cargar Usuarios
     this.adminService.getAllUsers().subscribe({
-      error: (error) => console.error('Error loading users:', error)
+      next: (usersList) => {
+        this.users.set(usersList);
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        this.isLoading.set(false);
+      }
     });
   }
 
@@ -46,10 +74,9 @@ export class Dashboard implements OnInit {
       this.adminService.approveCourse(courseId).subscribe({
         next: () => {
           alert('Curso aprobado exitosamente');
+          this.loadDashboardData(); // Recargar datos
         },
-        error: (error) => {
-          alert('Error al aprobar: ' + error.message);
-        }
+        error: (error) => alert('Error al aprobar: ' + error.message)
       });
     }
   }
@@ -60,10 +87,9 @@ export class Dashboard implements OnInit {
       this.adminService.rejectCourse(courseId, reason).subscribe({
         next: () => {
           alert('Curso rechazado');
+          this.loadDashboardData(); // Recargar datos
         },
-        error: (error) => {
-          alert('Error al rechazar: ' + error.message);
-        }
+        error: (error) => alert('Error al rechazar: ' + error.message)
       });
     }
   }

@@ -166,27 +166,47 @@
             <!-- Right Column - Enrollment Card -->
             <div class="col-lg-4">
               <div class="card-modern p-4 sticky-top top-spacing">
-                <!-- Price -->
+                
                 <div class="text-center mb-4">
                   @if (course()!.price === 0) {
                     <h2 class="display-4 fw-bold text-success mb-0">Gratis</h2>
                   } @else {
                     <h2 class="display-4 fw-bold mb-0">
-                      {{ course()!.currency }} {{ course()!.price }}
+                      {{ course()!.price | currency:'PEN':'S/' }}
                     </h2>
                   }
                 </div>
 
-                <!-- Enroll Button -->
-                @if (isAuthenticated()) {
+                @if (canManage()) {
+                  <div class="alert alert-soft-primary border-0 mb-3">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                      <i class="bi bi-shield-check text-primary"></i>
+                      <strong class="text-primary">Modo Gestión</strong>
+                    </div>
+                    <small class="text-muted">Estás viendo este curso como {{ authService.userRole() === 'ADMIN' ? 'administrador' : 'instructor' }}.</small>
+                  </div>
+
+                  <a 
+                    class="btn btn-dark w-100 btn-lg mb-3" 
+                    [routerLink]="authService.userRole() === 'ADMIN' ? '/admin/courses' : '/teacher/my-courses'">
+                    <i class="bi bi-gear-fill me-2"></i>
+                    {{ authService.userRole() === 'ADMIN' ? 'Panel de Administración' : 'Volver a Mis Cursos' }}
+                  </a>
+
+                } @else if (isAuthenticated()) {
                   @if (isEnrolled()) {
-                    <button class="btn btn-success w-100 btn-lg mb-3" disabled>
-                      <i class="bi bi-check-circle me-2"></i>
-                      Ya inscrito
-                    </button>
-                    <a routerLink="/student/my-courses" class="btn btn-outline-primary w-100">
-                      Ir a mis cursos
+                    <div class="mb-3">
+                        <button class="btn btn-success w-100 btn-lg" disabled>
+                            <i class="bi bi-check-circle me-2"></i>
+                            Ya estás inscrito
+                        </button>
+                    </div>
+                    
+                    <a [routerLink]="['/student/course', course()!.id]" class="btn btn-primary w-100 shadow-sm">
+                      <i class="bi bi-play-circle-fill me-2"></i>
+                      Ir al Contenido
                     </a>
+
                   } @else {
                     <button 
                       class="btn btn-gradient w-100 btn-lg mb-3"
@@ -201,6 +221,7 @@
                       }
                     </button>
                   }
+
                 } @else {
                   <a routerLink="/auth/login" class="btn btn-gradient w-100 btn-lg mb-3">
                     Inicia sesión para inscribirte
@@ -209,7 +230,6 @@
 
                 <hr class="my-4">
 
-                <!-- Course Details -->
                 <h6 class="fw-bold mb-3">Este curso incluye:</h6>
                 <ul class="list-unstyled">
                   <li class="mb-3">
@@ -240,39 +260,16 @@
 
                 <hr class="my-4">
 
-                <!-- Share -->
                 <div class="text-center">
                   <small class="text-muted d-block mb-2">Compartir este curso</small>
                   <div class="d-flex gap-2 justify-content-center">
-                    <button 
-                    type="button" 
-                    class="btn btn-outline-secondary btn-sm" 
-                    aria-label="Compartir en Facebook">
-                    <i class="bi bi-facebook"></i>
-                    </button>
-
-                    <button 
-                    type="button" 
-                    class="btn btn-outline-secondary btn-sm" 
-                    aria-label="Compartir en Twitter">
-                    <i class="bi bi-twitter"></i>
-                    </button>
-
-                    <button 
-                    type="button" 
-                    class="btn btn-outline-secondary btn-sm" 
-                    aria-label="Compartir en WhatsApp">
-                    <i class="bi bi-whatsapp"></i>
-                    </button>
-
-                    <button 
-                    type="button" 
-                    class="btn btn-outline-secondary btn-sm" 
-                    aria-label="Copiar enlace">
-                    <i class="bi bi-link-45deg"></i>
-                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-facebook"></i></button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-twitter"></i></button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-whatsapp"></i></button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"><i class="bi bi-link-45deg"></i></button>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>

@@ -17,21 +17,19 @@ import { RatingStars } from '../../../shared/components/rating-stars/rating-star
 export class MyCourses implements OnInit {
   private studentService = inject(StudentService);
 
-  enrolledCourses = this.studentService.enrolledCourses;
+  // CAMBIO CLAVE: Usamos 'enrollments' en lugar de 'enrolledCourses'
+  // Esto trae el objeto completo: { progressPercentage: 50, course: {...} }
+  enrollments = this.studentService.enrollments;
   isLoading = this.studentService.isLoading;
 
   ngOnInit(): void {
-    this.loadCourses();
+    this.loadData();
   }
 
-  loadCourses(): void {
-    this.studentService.getEnrolledCourses().subscribe({
-      error: (error) => console.error('Error loading courses:', error)
+  loadData(): void {
+    // Llamamos al historial de inscripciones para tener el progreso real
+    this.studentService.getEnrollmentHistory().subscribe({
+      error: (error) => console.error('Error loading enrollments:', error)
     });
-  }
-
-  getProgress(courseId: string): number {
-    // TODO: Implementar obtención de progreso real
-    return Math.floor(Math.random() * 100);
   }
 }

@@ -3,14 +3,12 @@
     <!-- Thumbnail -->
     <div class="course-thumbnail position-relative">
       @if (course.thumbnail) {
-        <!-- CORRECCIÓN: alt vacío para evitar leer el título dos veces -->
         <img 
           [src]="course.thumbnail" 
           alt="" 
           class="w-100">
       } @else {
         <div class="placeholder-thumbnail bg-gradient d-flex align-items-center justify-content-center">
-          <!-- CORRECCIÓN: Clase en lugar de style inline -->
           <i class="bi bi-play-circle text-white placeholder-icon" aria-hidden="true"></i>
         </div>
       }
@@ -59,7 +57,6 @@
       <!-- Profesor -->
       <div class="d-flex align-items-center gap-2 mb-3">
         @if (course.teacherAvatar) {
-          <!-- CORRECCIÓN: alt vacío para evitar leer el nombre dos veces -->
           <img 
             [src]="course.teacherAvatar" 
             alt=""
@@ -88,7 +85,7 @@
           <span class="h5 mb-0 text-success fw-bold">Gratis</span>
         } @else {
           <span class="h5 mb-0 fw-bold">
-            {{ course.currency }} {{ course.price }}
+            {{ course.price | currency:'PEN':'S/' }}
           </span>
         }
         <a 

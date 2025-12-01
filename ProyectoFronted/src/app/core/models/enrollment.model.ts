@@ -3,6 +3,8 @@
 // Modelo para las inscripciones de estudiantes a cursos
 // ==========================================================================
 
+import { Course } from "./course.model";
+
 /**
  * Estado de una inscripción
  */
@@ -20,6 +22,8 @@ export interface Enrollment {
   id: string;
   studentId: string;
   courseId: string;
+
+  course: Course;
   
   // Información del pago
   paymentId: string;
@@ -34,7 +38,7 @@ export interface Enrollment {
   expiresAt?: Date; // Para cursos con acceso limitado
   
   // Progreso
-  progress: number; // Porcentaje 0-100
+  progressPercentage: number // Porcentaje 0-100
   lastAccessedAt: Date;
   
   // Certificado

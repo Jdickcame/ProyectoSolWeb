@@ -51,6 +51,7 @@ export interface Course {
   teacherId: string;
   teacherName: string;
   teacherAvatar?: string;
+  sections?: CourseSection[];
   
   // Detalles del curso
   category: CourseCategory;

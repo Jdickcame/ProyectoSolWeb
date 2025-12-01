@@ -79,6 +79,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/teacher/analytics/analytics').then(m => m.Analytics),
     canActivate: [authGuard, roleGuard([UserRole.TEACHER])]
   },
+  {
+    path: 'teacher/messages',
+    loadComponent: () => import('./features/teacher/messages/messages')
+      .then(m => m.Messages),
+    canActivate: [authGuard, roleGuard]
+  },
 
   // ADMIN ROUTES
   {
@@ -95,6 +101,27 @@ export const routes: Routes = [
     path: 'admin/course-management',
     loadComponent: () => import('./features/admin/course-management/course-management').then(m => m.CourseManagement),
     canActivate: [authGuard, roleGuard([UserRole.ADMIN])]
+  },
+  {
+    path: 'admin/courses',
+    loadComponent: () => import('./features/admin/course-management/course-management')
+      .then(m => m.CourseManagement),
+    canActivate: [authGuard, roleGuard]
+  },
+
+  // RUTA DEL ESTUDIANTE (Para el botón "Ver Contenido")
+  {
+    path: 'student/course/:id',
+    loadComponent: () => import('./features/student/course-viewer/course-viewer')
+      .then(m => m.CourseViewer),
+    canActivate: [authGuard]
+  },
+
+  {
+    path: 'student/messages',
+    loadComponent: () => import('./features/student/messages/messages')
+      .then(m => m.Messages),
+    canActivate: [authGuard] // Solo usuarios logueados
   },
 
   // PROFILE

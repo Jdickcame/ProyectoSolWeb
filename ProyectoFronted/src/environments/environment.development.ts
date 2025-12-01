@@ -1,44 +1,46 @@
+
+
 // ==========================================================================
-// ENVIRONMENT - DEVELOPMENT
-// Configuración para el entorno de desarrollo
+// ENVIRONMENT - PRODUCTION
+// Configuración para el entorno de producción
 // ==========================================================================
 
 export const environment = {
-  production: false,
-  environmentName: 'development',
+  production: true,
+  environmentName: 'production',
   
   // API Configuration
-  apiUrl: 'http://localhost:8080/api/v1', // URL del backend Spring Boot
-  apiTimeout: 30000, // 30 segundos
+  apiUrl: 'https://api.educonect.com/api/v1', // Cambiar cuando tengas el dominio real
+  apiTimeout: 30000,
   
   // Authentication
   tokenKey: 'educonect_auth_token',
   refreshTokenKey: 'educonect_refresh_token',
-  tokenExpirationMinutes: 60, // 1 hora
+  tokenExpirationMinutes: 60,
   
   // Pagination defaults
   defaultPageSize: 12,
   maxPageSize: 100,
   
   // File upload
-  maxFileSize: 10485760, // 10MB en bytes
+  maxFileSize: 10485760, // 10MB
   allowedImageTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
   allowedVideoTypes: ['video/mp4', 'video/webm'],
   allowedDocumentTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
   
-  // Features flags (para activar/desactivar funcionalidades)
+  // Features flags
   features: {
     enableLiveClasses: true,
     enableCertificates: true,
     enableCoupons: true,
     enableReviews: true,
-    enablePayments: false, // Desactivado en desarrollo (pago simulado)
+    enablePayments: true, // Activado en producción
   },
   
   // External services
   videoCallPlatforms: {
     zoom: {
-      enabled: false,
+      enabled: false, // Configurar cuando sea necesario
       apiKey: '',
     },
     googleMeet: {
@@ -46,13 +48,13 @@ export const environment = {
     },
   },
   
-  // Analytics (opcional)
+  // Analytics
   analytics: {
-    enabled: false,
-    googleAnalyticsId: '',
+    enabled: true,
+    googleAnalyticsId: 'G-XXXXXXXXXX', // Reemplazar con tu ID real
   },
   
   // Logging
-  logLevel: 'debug', // 'debug' | 'info' | 'warn' | 'error'
-  enableConsoleLog: true,
+  logLevel: 'error', // Solo errores en producción
+  enableConsoleLog: false,
 };

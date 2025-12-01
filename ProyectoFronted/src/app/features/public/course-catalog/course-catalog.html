@@ -4,7 +4,7 @@
     <section class="catalog-header bg-dark-theme text-white py-5">
       <div class="container">
         <h1 class="display-4 fw-bold mb-3">Explorar Cursos</h1>
-        <p class="lead text-white-50">Encuentra el curso perfecto para ti</p>
+        <p class="lead text-white">Encuentra el curso perfecto para ti</p>
       </div>
     </section>
 
@@ -102,8 +102,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
               <div>
                 <h5 class="mb-0">
-                  {{ totalCourses() }} 
-                  {{ totalCourses() === 1 ? 'curso encontrado' : 'cursos encontrados' }}
+                  <strong>{{ courses().length }}</strong> cursos encontrados
                 </h5>
               </div>
               <div class="d-flex gap-2 align-items-center">

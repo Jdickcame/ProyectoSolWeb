@@ -61,4 +61,25 @@ export class RatingStars {
       this.updateStars();
     }
   }
+
+  // 👇 MÉTODO FALTANTE 1: getAriaLabel()
+  // Usado para accesibilidad (Error: TS2339: Property 'getAriaLabel' does not exist)
+  getAriaLabel(): string {
+    const value = this.hoverRating || this.rating;
+    return `Calificación actual: ${value} de 5 estrellas.`;
+  }
+
+  // 👇 MÉTODO FALTANTE 2: onKeyDown()
+  // Usado para manejar la interacción del teclado (Error: TS2339: Property 'onKeyDown' does not exist)
+  onKeyDown(event: KeyboardEvent, index: number) {
+    if (!this.interactive) {
+      return;
+    }
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault(); // Evita el scroll u otras acciones por defecto
+      this.onStarClick(index);
+    }
+    // Puedes añadir lógica para flechas de teclado si es necesario (e.g., event.key === 'ArrowRight')
+  }
 }

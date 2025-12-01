@@ -150,3 +150,27 @@
 .h-100-minus-nav {
   height: calc(100vh - 70px);
 }
+
+/* Fondo negro que ocupa todo el ancho */
+.video-wrapper {
+  background-color: #000;
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Centra el video */
+}
+
+/* El video en sí */
+.video-container {
+  position: relative;
+  width: 80%;
+  max-width: 960px; /* LÍMITE DE ANCHO: No pasará de este tamaño */
+  aspect-ratio: 16 / 9; /* Mantiene proporción rectangular */
+  
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
